@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
+	default-autowire="byName" default-dependency-check="none">
+
+	<!-- 数据库方言处理类start -->
+	<bean id="dbDialectGenerator" class="com.fable.hamal.common.dialect.sqldb.DbDialectGenerator"></bean>
+	<bean id="sqldbDataSourceManager" class="com.fable.hamal.node.common.datasource.sqldb.SqldbDataSourceManager"></bean>
+	
+	<bean id="sqldbDialectFactory" class="com.fable.hamal.common.dialect.sqldb.SqldbDialectFactory">
+		<property name="dbDialectGenerator" ref="dbDialectGenerator" />
+		<property name="dataSourceManage" ref="sqldbDataSourceManager" />
+	</bean>
+	<!-- 数据库方言处理类end -->
+
+	<bean id="selectorFactory" class="com.fable.hamal.node.core.select.factory.SelectorFactoryDelegate"></bean>
+	<bean id="loaderFactory" class="com.fable.hamal.node.core.load.factory.LoaderFactoryDelegate"></bean>
+	<bean id="chainManager" class="com.fable.hamal.node.core.extract.chain.manager.impl.SimpleChainManager"></bean>
+	
+	<bean id="sqlTableSelectorFactory" class="com.fable.hamal.node.core.select.factory.SqlTableSelectorFactory">
+		<property name="sqldbDialectFactory" ref="sqldbDialectFactory" />
+	</bean>
+	<bean id="sqlTableLoaderFactory" class="com.fable.hamal.node.core.load.factory.SqlTableLoaderFactory">
+		<property name="sqldbDialectFactory" ref="sqldbDialectFactory" />
+	</bean>
+	<bean id="ftpPathSelectorFactory" class="com.fable.hamal.node.core.select.factory.FtpSelectorFactory"></bean>
+	<bean id="ftpPathLoaderFactory" class="com.fable.hamal.node.core.load.factory.FtpLoaderFactory"></bean>
+	<!-- zhangl 增量同步、时间戳同步 日志 start -->
+	<bean id="addTableSelectorFactory" class="com.fable.hamal.node.core.trigger.AddTableSelecterFactory">
+		<property name="sqldbDialectFactory" ref="sqldbDialectFactory" />
+	</bean>
+	<bean id="addTableLoaderFactory" class="com.fable.hamal.node.core.trigger.AddTableLoaderFactory">
+		<property name="sqldbDialectFactory" ref="sqldbDialectFactory" />
+	</bean>
+	<!-- 主从表  -->
+	<bean id="fpTableSelectorFactory" class="com.fable.hamal.node.core.trigger.AddFPTableSelecterFactory">
+		<property name="sqldbDialectFactory" ref="sqldbDialectFactory" />
+	</bean>
+	<bean id="fpTableLoaderFactory" class="com.fable.hamal.node.core.trigger.AddFPTableLoaderFactory">
+		<property name="sqldbDialectFactory" ref="sqldbDialectFactory" />
+	</bean>
+	<!-- 时间戳同步   -->
+	<bean id="sqlTableTimestampSelectorFactory" class="com.fable.hamal.node.core.select.factory.SqlTableTimestampSelectorFactory">
+		<property name="sqldbDialectFactory" ref="sqldbDialectFactory" />
+	</bean>
+	<bean id="sqlTableTimestampLoaderFactory" class="com.fable.hamal.node.core.load.factory.SqlTableTimestampLoaderFactory">
+		<property name="sqldbDialectFactory" ref="sqldbDialectFactory" />
+		<property name="jdbcTemplate" ref="jdbcTemplate" />
+	</bean>
+	<!-- 行级日志、详细日志入库 -->
+	<bean id="rowLevelLogImpl" class="com.fable.hamal.shuttle.common.syslog.impl.RowLevelLogImpl">
+		<property name="jdbcTemplate" ref="jdbcTemplate" />
+	</bean>
+	
+	<bean id="syslogDetailImpl" class="com.fable.hamal.shuttle.common.syslog.impl.SyslogDetailImpl">
+		<property name="jdbcTemplate" ref="jdbcTemplate" />
+	</bean>
+	
+	<bean id="sysLogImpl" class="com.fable.hamal.shuttle.common.syslog.impl.SysLogImpl">
+		<property name="jdbcTemplate" ref="jdbcTemplate" />
+	</bean>
+	
+	<!-- 用于时间戳成功后 修改oracle数据库的时间戳表 -->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource">
+			<ref bean="dataSourceOracle" />
+		</property>
+	</bean>
+	<bean id="dataSourceOracle"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName">
+			<value>oracle.jdbc.driver.OracleDriver</value>
+		</property>
+		<property name="url">
+			<value>jdbc:oracle:thin:@192.168.1.217:1521:orcl</value>
+		</property>
+		<property name="username">
+			<value>fable</value>
+		</property>
+		<property name="password">
+			<value>fable</value>
+		</property>
+	</bean>
+	<!-- end -->
+	
+	
+	<!--  
+	<bean id="extracterFactory" class="com.fable.hamal.node.core.select.factory.SelectorFactoryDelegate"></bean>
+	<bean id="transformerFactory" class="com.fable.hamal.node.core.select.factory.SelectorFactoryDelegate"></bean>
+	<bean id="loaderFactory" class="com.fable.hamal.node.core.select.factory.SelectorFactoryDelegate"></bean>
+	-->
+</beans>

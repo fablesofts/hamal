@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
+	default-autowire="byName" default-dependency-check="none">
+
+	<bean id="sqldbDialectFactory" class="com.fable.hamal.common.dialect.sqldb.SqldbDialectFactory">
+		<property name="dataSourceManage"><ref bean="dataSourceManage"/></property>
+		<property name="dbDialectGenerator"><ref bean="dbDialectGenerator"/></property>
+	</bean>
+	
+	<bean id="dataSourceManage" class="com.fable.hamal.node.common.datasource.sqldb.SqldbDataSourceManager"></bean>
+	
+	<bean id="dbDialectGenerator" class="com.fable.hamal.common.dialect.sqldb.DbDialectGenerator">
+		<property name="defaultLobHandler" ref="defaultLobHandler"></property>
+		<property name="oracleLobHandler" ref="oracleLobHandler"></property>
+	</bean>
+	
+	<bean id="defaultLobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler">
+		<property name="streamAsLob" value="true" />
+	</bean>
+	
+	<bean id="oracleLobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler"></bean>
+</beans>

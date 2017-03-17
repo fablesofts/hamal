@@ -1,0 +1,232 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.fable.hamal</groupId>
+		<artifactId>hamal</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>ftpserver</artifactId>
+	<!-- ftp-core -->
+	<dependencies>
+	<!-- commons-compress -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fable.hamal</groupId>
+			<artifactId>shuttle.communication</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fable.hamal</groupId>
+			<artifactId>shuttle.common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ftpserver</groupId>
+			<artifactId>ftpserver-core</artifactId>
+			<version>1.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.9</version>
+		</dependency>
+		<!-- hsqldb -->
+		<dependency>
+			<groupId>hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>1.8.0.10</version>
+		</dependency>
+		<!-- commons -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-pool</groupId>
+			<artifactId>commons-pool</artifactId>
+		</dependency>
+		<!-- mysql -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+		<!--commons-net -->
+		<dependency>
+			<groupId>commons-net</groupId>
+			<artifactId>commons-net</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+		<!-- junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<!-- mina -->
+		<dependency>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-core</artifactId>
+			<version>2.0.0</version>
+		</dependency>
+		<!-- slf4j -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.6</version>
+		</dependency>
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc6</artifactId>
+			<version>11.2.0.1.0</version>
+		</dependency>
+		<!-- slf4j-log4j 
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.6</version>
+		</dependency>
+		-->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<!-- deploy模块的packaging通常是jar，如果项目中没有java 源代码或资源文件，加上这一段配置使项目能通过构建 -->
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration> 
+					<excludes> 
+						<exclude>**/*.properties</exclude> 
+						<exclude>**/*.xml</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<!-- 这是最新版本，推荐使用这个版本 -->
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>assemble</id>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<phase>package</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<appendAssemblyId>false</appendAssemblyId>
+					<attach>false</attach>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>env</name>
+					<value>dev</value>
+				</property>
+			</activation>
+
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<configuration>
+							<!-- maven assembly插件需要一个描述文件 来告诉插件包的结构以及打包所需的文件来自哪里 -->
+							<descriptors>
+								<descriptor>${basedir}/src/main/assembly/dev.xml</descriptor>
+							</descriptors>
+							<finalName>ftpserver</finalName>
+							<outputDirectory>${project.build.directory}</outputDirectory>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+
+		</profile>
+
+		<profile>
+			<id>release</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>release</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<configuration>
+							<!-- 发布模式使用的maven assembly插件描述文件 -->
+							<descriptors>
+								<descriptor>${basedir}/src/main/assembly/release.xml</descriptor>
+							</descriptors>
+							<!-- 如果一个应用的包含多个deploy模块，如果使用同样的包名， 如果把它们复制的一个目录中可能会失败，所以包名加了 artifactId以示区分 -->
+							<finalName>${project.artifactId}-${project.version}</finalName>
+							<!-- scm 要求 release 模式打出的包放到顶级目录下的target子目录中 -->
+							<outputDirectory>${project.parent.build.directory}</outputDirectory>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>mvn</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>mvn</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<configuration>
+							<!-- 发布模式使用的maven assembly插件描述文件 -->
+							<descriptors>
+								<descriptor>${basedir}/src/main/assembly/mvn.xml</descriptor>
+							</descriptors>
+							<!-- 如果一个应用的包含多个deploy模块，如果使用同样的包名， 如果把它们复制的一个目录中可能会失败，所以包名加了 artifactId以示区分 -->
+							<finalName>${project.artifactId}-${project.version}</finalName>
+							<!-- scm 要求 release 模式打出的包放到顶级目录下的target子目录中 -->
+							<outputDirectory>${project.parent.parent.build.directory}</outputDirectory>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>

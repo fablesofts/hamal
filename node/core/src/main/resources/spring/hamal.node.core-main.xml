@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+	http://www.springframework.org/schema/context
+ 	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
+	default-autowire="byName">
+
+	<!--  
+	<bean id="selector" class="com.fable.hamal.node.core.select.SQLTableSelector"></bean>
+	<bean id="loader" class="com.fable.hamal.node.core.load.SQLTableLoader"></bean>
+	-->
+	<bean id="selectAllocateEvent" class="com.fable.hamal.shuttle.allocation.event.SelectMemoryAllocateEvent"></bean>
+	<bean id="extractAllocateEvent" class="com.fable.hamal.shuttle.allocation.event.ExtractMemoryAllocateEvent"></bean>
+	<bean id="loadAllocateEvent" class="com.fable.hamal.shuttle.allocation.event.LoadMemoryAllocateEvent"></bean>
+	
+	<bean id="dataPipe" class="com.fable.hamal.node.core.pipe.DataPipe" scope="singleton"></bean>
+	<bean id="stageManager" class="com.fable.hamal.shuttle.allocation.manager.StageManager"></bean>
+	<bean id="stageManagerFactory" class="com.fable.hamal.shuttle.allocation.manager.factory.StageManagerFactory"></bean>
+	<bean id="fullDataPipe" class="com.fable.hamal.node.core.pipe.FullDataPipe" scope="singleton"></bean>
+	
+	<bean id="allocateEventService" class="com.fable.hamal.shutte.allocation.event.service.impl.DefaultAllocateEventServiceImpl">
+		<property name="selectAllocateEvent">
+			<ref bean="selectAllocateEvent" />
+		</property>
+		<property name="extractAllocateEvent">
+			<ref bean= "extractAllocateEvent"/>
+		</property>
+		<property name="loadAllocateEvent">
+			<ref bean="loadAllocateEvent" />
+		</property>
+	</bean>
+	<context:component-scan base-package="com.fable.hamal" /> 
+	<aop:aspectj-autoproxy/>
+</beans>

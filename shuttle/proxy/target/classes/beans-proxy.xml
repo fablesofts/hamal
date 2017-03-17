@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
+	default-autowire="byName" default-dependency-check="none" >
+	<!-- 配置信息 -->
+	<bean id="propertyConfigurer" class="com.fable.hamal.shuttle.common.utils.spring.HamalPropertyConfigurer" lazy-init="false">
+		<property name="locations">
+			<list>
+				<value>classpath:hamal.proxy.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="communication" class="com.fable.hamal.shuttle.communication.client.DefaultCommunication">
+		<property name="factory">
+			<bean id="rmiFactory" class="com.fable.hamal.shuttle.communication.connection.RMIConnectionFactory"></bean>
+		</property>
+	</bean>
+	
+	<bean id="statistics" class="com.fable.hamal.proxy.util.Statistics">
+		<property name="communication">
+			<ref bean="communication"/>
+		</property>
+	</bean>
+</beans>

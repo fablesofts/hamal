@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
+	default-autowire="byName" default-dependency-check="none" >
+
+	<bean id="baseService"  abstract="true">
+		<property name="jdbcTemplate" ref="jdbcTemplate"/>
+	</bean>
+	<bean id="dataSourceService" class="com.fable.hamal.manager.core.config.service.impl.DataSourceServiceImpl" parent="baseService"></bean>
+	<bean id="etlStrategyService" class="com.fable.hamal.manager.core.config.service.impl.EtlStrategyServiceImpl" parent="baseService"></bean>
+	<bean id="pipelineService" class="com.fable.hamal.manager.core.config.service.impl.PipelineServiceImpl" parent="baseService"></bean>
+	<bean id="scheduleConfigService" class="com.fable.hamal.manager.core.config.service.impl.ScheduleConfigServiceImpl" parent="baseService"></bean>
+	<bean id="taskService" class="com.fable.hamal.manager.core.config.service.impl.TaskServiceImpl" parent="baseService"></bean>
+	<bean id="transEntityService" class="com.fable.hamal.manager.core.config.service.impl.TransEntityServiceImpl" parent="baseService"></bean>
+	<!-- zhangl 时间戳-->
+	<bean id="timestampService" class="com.fable.hamal.manager.core.config.service.impl.TimestampServiceImpl" parent="baseService"></bean>
+	<!-- end -->
+	<bean id="jobService" class="com.fable.hamal.manager.core.job.JobServiceImpl"></bean>
+</beans>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server xmlns="http://mina.apache.org/ftpserver/spring/v1"
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://mina.apache.org/ftpserver/spring/v1 http://mina.apache.org/ftpserver/ftpserver-1.0.xsd"
+       id="ftpd" max-logins="20000"
+       >
+        <listeners>
+            <nio-listener name="default" port="21" implicit-ssl="false"  idle-timeout="6000000" local-address="127.0.0.1">
+            </nio-listener>
+        </listeners>
+        <ftplets>
+        <!-- 自定义的FTP监听 -->
+		<ftplet name="ftplet1">
+			<beans:bean class="com.fable.hamal.ftp.listener.ReplicationListener">
+				<beans:property name="replicate">
+					<beans:ref bean="replicationServiceImpl"/>
+				</beans:property>
+			</beans:bean>
+		</ftplet>
+		</ftplets>
+
+        <!-- 
+        <file-user-manager file="users.properties"
+		encrypt-passwords="md5"/> -->
+		<db-user-manager encrypt-passwords="clear"> 
+    		<data-source>
+    		<beans:bean class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		        <beans:property name="driverClassName" value="${jdbc.driverClassName}" />
+		        <beans:property name="url" value="${jdbc.url}" />
+				<beans:property name="username" value="${jdbc.username}" />
+				<beans:property name="password" value="${jdbc.password}" />
+		        </beans:bean>
+    		</data-source>
+		    <insert-user>INSERT INTO FTP_USER (userid, userpassword,
+		        homedirectory, enableflag, writepermission, idletime, uploadrate,
+		        downloadrate) VALUES ('{userid}', '{userpassword}', '{homedirectory}',
+		        {enableflag}, {writepermission}, {idletime}, {uploadrate},
+		        {downloadrate})
+		    </insert-user>
+		    
+		    <update-user>
+		        UPDATE FTP_USER SET
+		            userpassword='{userpassword}',
+		            homedirectory='{homedirectory}',
+		            enableflag={enableflag},
+		            writepermission={writepermission},
+		            idletime={idletime},
+		            uploadrate={uploadrate},
+		            downloadrate={downloadrate}
+		        WHERE userid='{userid}'
+		    </update-user>
+		    
+		    <delete-user>
+		        DELETE FROM FTP_USER WHERE userid = '{userid}'
+		    </delete-user>
+		    
+		    <select-user>
+		        SELECT userid, userpassword, homedirectory,
+		            enableflag, writepermission, idletime, uploadrate, downloadrate,maxloginnumber,maxloginperip
+		        FROM FTP_USER 
+		        WHERE userid = '{userid}'
+		    </select-user>
+		    
+		    <select-all-users>
+		        SELECT userid FROM FTP_USER ORDER BY userid
+		    </select-all-users>
+		    
+		    <is-admin>
+		        SELECT userid 
+		        FROM FTP_USER 
+		        WHERE userid='{userid}' AND userid='admin'
+		    </is-admin>
+		    
+    		<authenticate>
+    			SELECT userpassword from FTP_USER WHERE userid='{userid}'
+    		</authenticate>
+		</db-user-manager>  
+		<!-- 自定义commands -->
+        <native-filesystem case-insensitive="false" create-home="true" />
+        <messages languages="cn" directory="ftpd" />
+</server>
